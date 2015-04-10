@@ -1,6 +1,6 @@
 # arduino-sflow
 
-Warning: this is work in progress
+Warning: this is work in progress, and contains a lot of debugging printouts
 
 ## Usage
 
