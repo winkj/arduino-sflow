@@ -32,8 +32,8 @@
 #include "flowi2chelper.h"
 
 
-SensirionFlow::SensirionFlow(uint8_t i2cAddress)
-  : mI2cAddress(i2cAddress)
+SensirionFlow::SensirionFlow(uint8_t i2cAddress, bool printDebug)
+  : mI2cAddress(i2cAddress), mScaleFactor(1), mPrintDebug(printDebug)
 {
 }
 
@@ -68,25 +68,29 @@ void SensirionFlow::init()
   uint16_t prefix = measurementUnit & 0xF;
   uint16_t timeBase = measurementUnit >> 3;
   uint16_t volume = timeBase >> 4 & 0x1F;
-  Serial.println(timeBase, HEX);
-  Serial.println(volume, HEX);
+
+  if (mPrintDebug) {
+    Serial.println(timeBase, HEX);
+    Serial.println(volume, HEX);
+  }
   
   timeBase &= 0xF;
   volume   &= 0x1F;
 
-  
-  Serial.print("\n<scale: ");
-  Serial.print(mScaleFactor, HEX);
-  Serial.print(" ");
-  Serial.print(mScaleFactor);
-  Serial.print("><dimension: ");
-  Serial.print(prefix);
-  Serial.print("><time base: ");
-  Serial.print(timeBase);
-  Serial.print("><volume: ");
-  Serial.print(volume);
-  Serial.print(">");
-  Serial.print("\n");
+  if (mPrintDebug) {
+    Serial.print("\n<scale: ");
+    Serial.print(mScaleFactor, HEX);
+    Serial.print(" ");
+    Serial.print(mScaleFactor);
+    Serial.print("><dimension: ");
+    Serial.print(prefix);
+    Serial.print("><time base: ");
+    Serial.print(timeBase);
+    Serial.print("><volume: ");
+    Serial.print(volume);
+    Serial.print(">");
+    Serial.print("\n");
+  }
 }
 
 float SensirionFlow::readSample()
@@ -106,13 +110,14 @@ float SensirionFlow::readSample()
   
   float measurementValue = ((data[0] << 8) + data[1]);
  
-  Serial.print("<raw: ");
-  Serial.print(measurementValue, 8);
-  Serial.print("><scaled: ");
-  measurementValue /= mScaleFactor;
-  Serial.print(measurementValue, 8);
-  Serial.println(">");
-  
+  if (mPrintDebug) {
+    Serial.print("<raw: ");
+    Serial.print(measurementValue, 8);
+    Serial.print("><scaled: ");
+    measurementValue /= mScaleFactor;
+    Serial.print(measurementValue, 8);
+    Serial.println(">");
+  }
   return measurementValue;
 }
 

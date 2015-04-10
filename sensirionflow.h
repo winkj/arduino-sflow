@@ -33,7 +33,7 @@
 class SensirionFlow
 {
 public:
-  SensirionFlow(uint8_t i2cAddress);
+  SensirionFlow(uint8_t i2cAddress, bool debug=false);
   void init();
   
   float readSample();
@@ -41,7 +41,7 @@ public:
 private:
   uint8_t mI2cAddress;
   int16_t mScaleFactor;
-
+  bool mPrintDebug;
 };
 
 #endif
