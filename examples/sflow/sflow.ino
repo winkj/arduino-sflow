@@ -9,9 +9,14 @@ void setup() {
   Wire.begin();  
   Serial.begin(9600);
   
-  delay(1000); // let serial console settle
-  flow.init();
-  delay(1000); // let serial console settle
+
+  // - NOTE: typically, the flow sensor has to be
+  // initialized, however since this is still a debug version
+  // refrain from doing so for now to get raw sensor data
+
+  // delay(1000); // let serial console settle
+  // flow.init();
+  // delay(1000); // let serial console settle
 }
 
 void loop() {
