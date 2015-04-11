@@ -26,12 +26,14 @@ Assuming you installed the library as described above, the following steps are n
 
 #include <sensirionflow.h>
 
-SensirionFlow flow(64, false);
+SensirionFlow flow(64);
 
 void setup() {
   // put your setup code here, to run once:
   Wire.begin();  
   Serial.begin(9600);
+
+  flow.init();
 }
 
 void loop() {    
