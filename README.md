@@ -1,6 +1,7 @@
 # arduino-sflow
 
-Warning: this is work in progress, and contains a lot of debugging printouts
+Unofficial Arduino driver support for Sensirion flow sensor products
+
 
 ## Installation
 
