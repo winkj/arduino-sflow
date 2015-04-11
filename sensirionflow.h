@@ -37,10 +37,18 @@ public:
   void init();
   
   float readSample();
+
+  uint8_t getDimension()          const { return mDimension;          };
+  uint8_t getTimeBase()           const { return mTimeBase;           };
+  uint8_t getVolumePressureUnit() const { return mVolumePressureUnit; };
   
 private:
   uint8_t mI2cAddress;
   int16_t mScaleFactor;
+
+  uint8_t mDimension;
+  uint8_t mTimeBase;
+  uint8_t mVolumePressureUnit;
 };
 
 #endif

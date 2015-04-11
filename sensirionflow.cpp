@@ -33,7 +33,12 @@
 
 
 SensirionFlow::SensirionFlow(uint8_t i2cAddress)
-  : mI2cAddress(i2cAddress), mScaleFactor(1)
+  : mI2cAddress(i2cAddress), 
+    mScaleFactor(1),
+    mDimension(-1),
+    mTimeBase(-1),
+    mVolumePressureUnit(-1)
+
 {
 }
 
@@ -67,14 +72,9 @@ void SensirionFlow::init()
   mScaleFactor = (data[0] << 8) + data[1]; // data[2] = crc
 
   uint16_t measurementUnit = (data[3] << 8) + data[4];  // data[2] = crc
-  uint16_t prefix = measurementUnit & 0xF;
-  uint16_t timeBase = (measurementUnit >> 4) & 0xF;
-  uint16_t volume = (measurementUnit >> 8) & 0x1F;
-
-  timeBase &= 0xF;
-  volume   &= 0x1F;
-
-  // todo: store!
+  mDimension = measurementUnit & 0xF;
+  mTimeBase = (measurementUnit >> 4) & 0xF;
+  mVolumePressureUnit = (measurementUnit >> 8) & 0x1F;
 }
 
 float SensirionFlow::readSample()
