@@ -32,8 +32,8 @@
 #include "flowi2chelper.h"
 
 
-SensirionFlow::SensirionFlow(uint8_t i2cAddress, bool printDebug)
-  : mI2cAddress(i2cAddress), mScaleFactor(1), mPrintDebug(printDebug)
+SensirionFlow::SensirionFlow(uint8_t i2cAddress)
+  : mI2cAddress(i2cAddress), mScaleFactor(1)
 {
 }
 
@@ -54,43 +54,27 @@ void SensirionFlow::init()
   baseAddress &= 0x70; // EEPROM base address is bits <6..4>
   baseAddress >>= 4;
   baseAddress *= 0x300;
-    
+
   // - read scale factor
-  int16_t scaleFactorAddress = baseAddress + 0x02B6;
+  int16_t scaleFactorAddress = (baseAddress + 0x02B6);
+  scaleFactorAddress <<= 4;  // address is a left aligned 12-bit value
+
   uint8_t cmdReadRegister[] = { 0xFA, (scaleFactorAddress >> 8), scaleFactorAddress & 0x00FF };
   if (!I2CHelper::readFromI2C(mI2cAddress, cmdReadRegister, 3, data, DATA_LENGTH)) {
     Serial.print("Failed to read from I2C 2\n");
     return;
   }
-  mScaleFactor = (data[0] << 8) + data[1];
-  uint16_t measurementUnit = (data[4] << 8) + data[5];
-  
-  uint16_t prefix = measurementUnit & 0xF;
-  uint16_t timeBase = measurementUnit >> 3;
-  uint16_t volume = timeBase >> 4 & 0x1F;
+  mScaleFactor = (data[0] << 8) + data[1]; // data[2] = crc
 
-  if (mPrintDebug) {
-    Serial.println(timeBase, HEX);
-    Serial.println(volume, HEX);
-  }
-  
+  uint16_t measurementUnit = (data[3] << 8) + data[4];  // data[2] = crc
+  uint16_t prefix = measurementUnit & 0xF;
+  uint16_t timeBase = (measurementUnit >> 4) & 0xF;
+  uint16_t volume = (measurementUnit >> 8) & 0x1F;
+
   timeBase &= 0xF;
   volume   &= 0x1F;
 
-  if (mPrintDebug) {
-    Serial.print("\n<scale: ");
-    Serial.print(mScaleFactor, HEX);
-    Serial.print(" ");
-    Serial.print(mScaleFactor);
-    Serial.print("><dimension: ");
-    Serial.print(prefix);
-    Serial.print("><time base: ");
-    Serial.print(timeBase);
-    Serial.print("><volume: ");
-    Serial.print(volume);
-    Serial.print(">");
-    Serial.print("\n");
-  }
+  // todo: store!
 }
 
 float SensirionFlow::readSample()
@@ -101,23 +85,12 @@ float SensirionFlow::readSample()
   uint8_t data[dataLength];
   
   command[0] = 0xF1;
-
-
   if (!I2CHelper::readFromI2C(mI2cAddress, command, 1, data, dataLength)) {
     Serial.print("Failed to read from I2C 4\n");
     return 0;
   }
   
   float measurementValue = ((data[0] << 8) + data[1]);
- 
-  if (mPrintDebug) {
-    Serial.print("<raw: ");
-    Serial.print(measurementValue, 8);
-    Serial.print("><scaled: ");
-    measurementValue /= mScaleFactor;
-    Serial.print(measurementValue, 8);
-    Serial.println(">");
-  }
-  return measurementValue;
+  return (measurementValue / mScaleFactor);
 }
 
