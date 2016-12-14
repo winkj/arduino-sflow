@@ -1,6 +1,3 @@
-# Important: this repository is deprecated - use https://github.com/Sensirion/arduino-sht instead!
-
-
 # arduino-sflow
 
 Unofficial Arduino driver support for Sensirion flow sensor products. At this point, only sensors using an I2C interface are supported.
