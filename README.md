@@ -2,6 +2,9 @@
 
 Unofficial Arduino driver support for Sensirion flow sensor products. At this point, only sensors using an I2C interface are supported.
 
+The following sensors are not supported:
+- SFM3000 
+
 
 ## Installation
 
