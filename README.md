@@ -1,3 +1,6 @@
+> :warning: **This is a library supporting older generations of flow sensors, and will likely not work for current generation of flow sensors**
+
+
 # arduino-sflow
 
 Unofficial Arduino driver support for Sensirion flow sensor products. At this point, only sensors using an I2C interface are supported.
